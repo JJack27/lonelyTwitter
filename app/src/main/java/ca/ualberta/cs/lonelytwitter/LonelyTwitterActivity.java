@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -22,42 +24,47 @@ import android.widget.ListView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class LonelyTwitterActivity extends Activity {
+public class LonelyTwitterActivity extends Activity implements View.OnClickListener {
 
 	private static final String FILENAME = "file.sav";
 	private EditText bodyText;
 	private ListView oldTweetsList;
 
-	private ArrayList<Tweet> tweets = new ArrayList<Tweet>;
+	private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 	private ArrayAdapter adapter;
 
 	/** Called when the activity is first created. */
 	@Override
-	public void onCreate(Bundle savedInstanceState) implements OnClickListener{
+	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		bodyText = (EditText) findViewById(R.id.body);
 		Button saveButton = (Button) findViewById(R.id.save);
 		Button clearButton = (Button) findViewById(R.id.clear);
+        saveButton.setOnClickListener(this);
+        clearButton.setOnClickListener(this);
 		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
 	}
 
 
 	// clicks for Buttions
 	public void onClick(View v){
-		int id = v.getID();
-		if(id == R.id.save){
+		int id = v.getId();
+        Log.d("Button", "inOnClick");
+        if(id == R.id.save){
 			// logic for save Button
 			setResult(RESULT_OK);
 			String text = bodyText.getText().toString();
 			tweets.add(new NormalTweet(text));
 			adapter.notifyDataSetChanged();
+            //bodyText.setText("");   // also clear the edit text field
 			saveInFile();
 		}else if(id == R.id.clear){
 			// logic for clear Button
 			setResult(RESULT_OK);
 			tweets.clear();
+            //bodyText.setText("");   // also clear the edit text field
 			adapter.notifyDataSetChanged();
 			saveInFile();
 		}
@@ -73,34 +80,33 @@ public class LonelyTwitterActivity extends Activity {
 		oldTweetsList.setAdapter(adapter);
 	}
 
-	private String[] loadFromFile() {
-		ArrayList<String> tweets = new ArrayList<String>();
+	private void loadFromFile() {
 		try {
 			FileInputStream fis = openFileInput(FILENAME);
 			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
 			Gson gson = new Gson();
 			// read data from gson file
-			Type listType = new TypeToken<ArrayList<NormalTweet>>() {}.getType();
+			Type listType = new TypeToken<ArrayList<NormalTweet>>(){}.getType();
 			tweets = gson.fromJson(in, listType);
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			tweets = new ArrayList<Tweet>;
+			tweets = new ArrayList<Tweet>();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-		return tweets.toArray(new String[tweets.size()]);
+		//return tweets.toArray(new String[tweets.size()]);
 	}
 
-	private void saveInFile(String text, Date date) {
+	private void saveInFile() {
 		try {
 			FileOutputStream fos = openFileOutput(FILENAME,
 					Context.MODE_APPEND);
 			OutputStreamWriter out = new OutputStreamWriter(fos);
 			Gson gson = new Gson();
 			gson.toJson(tweets, out);
-			writer.flush();
+			out.flush();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
