@@ -49,4 +49,9 @@ public abstract class Tweet {
     public void addMoodList(ArrayList<BaseMood> list){
         this.moods = list;
     }
+
+    @Override
+    public String toString(){
+        return date.toString() + " | " + message;
+    }
 }
