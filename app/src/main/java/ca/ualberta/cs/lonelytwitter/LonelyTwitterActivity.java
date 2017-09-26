@@ -58,13 +58,13 @@ public class LonelyTwitterActivity extends Activity implements View.OnClickListe
 			String text = bodyText.getText().toString();
 			tweets.add(new NormalTweet(text));
 			adapter.notifyDataSetChanged();
-            //bodyText.setText("");   // also clear the edit text field
+            bodyText.setText("");   // also clear the edit text field
 			saveInFile();
 		}else if(id == R.id.clear){
 			// logic for clear Button
 			setResult(RESULT_OK);
 			tweets.clear();
-            //bodyText.setText("");   // also clear the edit text field
+            bodyText.setText("");   // also clear the edit text field
 			adapter.notifyDataSetChanged();
 			saveInFile();
 		}
