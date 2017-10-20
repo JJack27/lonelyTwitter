@@ -30,3 +30,4 @@ proguard/
 *.jar
 *.war
 *.ear
+.idea/workspace.xml
